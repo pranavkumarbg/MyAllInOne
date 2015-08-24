@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">My All In One</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="sync_account_type">sunshine.example.com</string>
+    <string name="content_authority">com.rhcloud.phpnew_pranavkumar.myallinone.app</string>
+</resources>
