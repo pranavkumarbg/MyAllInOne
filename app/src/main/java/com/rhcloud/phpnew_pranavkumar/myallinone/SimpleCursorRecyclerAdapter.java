@@ -48,10 +48,12 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleCur
         final String versionName = cursor.getString(versionIndex);
         //Log.i("imageshiiiiiiii", versionName);
         Glide.with(mContext).load(versionName).into(holder.imgThumbnail);
+       // Log.i("image","loaded");
     }
 
     @Override
     public Cursor swapCursor(Cursor newCursor) {
+
         return super.swapCursor(newCursor);
     }
 

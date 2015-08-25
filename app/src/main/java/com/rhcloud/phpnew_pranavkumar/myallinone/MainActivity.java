@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.rhcloud.phpnew_pranavkumar.myallinone.data.MyContract;
+import com.rhcloud.phpnew_pranavkumar.myallinone.sync.SyncAdapter;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -38,27 +39,50 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     Cursor c;
     private static final int CURSOR_LOADER_ID = 0;
     public MyTestReceiver receiverForTest;
+    public static final long SECONDS_PER_MINUTE = 60;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 1;
+    public static final long SYNC_INTERVAL =
+            SYNC_INTERVAL_IN_MINUTES *
+                    SECONDS_PER_MINUTE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //SyncAdapter.syncImmediately(this);
-        c = this.getContentResolver().query(MyContract.MyEntry.CONTENT_URI,
-                        new String[]{MyContract.MyEntry._ID},
-                        null,
-                        null,
-                        null);
-
-        if (c.getCount() == 0){
-            insertData();
-           // Log.i("insertdata", "insertdata");
-        }
-        // initialize loader
-        getLoaderManager().initLoader(CURSOR_LOADER_ID, null,this);
-
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //SyncAdapter.syncImmediately(this);
+      //  Account newAccount = new Account("My All In One","com.rhcloud.phpnew_pranavkumar.myallinone.sync");
+        //ContentResolver.requestSync(newAccount, "com.rhcloud.phpnew_pranavkumar.myallinone.app",Bundle.EMPTY);
+        //ContentResolver.setSyncAutomatically(newAccount, "com.rhcloud.phpnew_pranavkumar.myallinone.app", true);
+//        ContentResolver.addPeriodicSync(
+//                newAccount,
+//                "com.rhcloud.phpnew_pranavkumar.myallinone.app",
+//                Bundle.EMPTY,
+//                SYNC_INTERVAL);
+
+
+        //SyncAdapter.syncImmediately(this);
+        c = this.getContentResolver().query(MyContract.MyEntry.CONTENT_URI,
+                new String[]{MyContract.MyEntry._ID},
+                null,
+                null,
+                null);
+
+        if (c.getCount() == 0){
+            //insertData();
+            // Log.i("insertdata", "insertdata");
+            SyncAdapter.syncImmediately(this);
+
+            //getLoaderManager().restartLoader(CURSOR_LOADER_ID,null,this);
+        }
+        // initialize loader
+
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
+
+//        Account newAccount = new Account("My All In One","com.rhcloud.phpnew_pranavkumar.myallinone.sync");
+//        ContentResolver.setSyncAutomatically(newAccount,"com.rhcloud.phpnew_pranavkumar.myallinone.app",true);
+
 
 
         setupAdapter();
@@ -78,11 +102,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //
 //        startService(intent);
 
-
+       // SyncAdapter.configurePeriodicSync(this,SYNC_INTERVAL,SYNC_FLEXTIME);
 
     }
 
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //getLoaderManager().initLoader(CURSOR_LOADER_ID, null,this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+    }
 
     private void setupAdapter()
     {
@@ -154,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
         mAdapter.swapCursor(cursor);
+        //setupAdapter();
 
         Log.i("onloadfinish","yeppe");
     }
@@ -161,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
-      mAdapter.swapCursor(null);
+        mAdapter.swapCursor(null);
     }
 
     @Override
@@ -234,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                     item.setThumbnail(jsonobject.optString("image"));
                     String f=jsonobject.optString("image");
-                   // Log.i("images",f);
+                    // Log.i("images",f);
                     feedItemList.add(item);
 
 
@@ -259,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 // Loop through static array of Flavors, add each to an instance of ContentValues
                 // in the array of ContentValues
 
-               // Log.i("imagesffff", "");
+                // Log.i("imagesffff", "");
                 for(int i = 0; i < feedItemList.size(); i++){
                     FeedItem s=feedItemList.get(i);
                     //Log.i("images", s.getThumbnail());
@@ -267,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     flavorValuesArr[i].put(MyContract.MyEntry.COLUMN_IMAGE, s.getThumbnail());
 
                     //Log.i("images", "iterating" + flavorValuesArr[i]);
-                   // getApplication().getContentResolver().insert(MyContract.MyEntry.CONTENT_URI,flavorValuesArr[i]);
+                    // getApplication().getContentResolver().insert(MyContract.MyEntry.CONTENT_URI,flavorValuesArr[i]);
 
 
                 }
@@ -278,9 +315,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 //getLoaderManager().initLoader(CURSOR_LOADER_ID, null, MainActivity.this);
 
 
-               // mAdapter = new SimpleCursorRecyclerAdapter(getApplicationContext(), null, 0, CURSOR_LOADER_ID);
+                // mAdapter = new SimpleCursorRecyclerAdapter(getApplicationContext(), null, 0, CURSOR_LOADER_ID);
 
-               // mRecyclerView.setAdapter(mAdapter);
+                // mRecyclerView.setAdapter(mAdapter);
+                // mAdapter.notify();
 
 
             } else {
@@ -295,3 +333,4 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 }
+
